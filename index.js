@@ -1,18 +1,24 @@
 const mongoose = require("mongoose");
 const Blog = require("./models/Blog");
-const User = require("./models/User")
+const User = require("./models/User");
+const Comment = require("./models/Comment");
 
 mongoose.connect(
   "mongodb+srv://andasan:kuishinbo@cluster0.cwwxk.mongodb.net/?retryWrites=true&w=majority"
+  // "mongodb+srv://admin:<password>@cluster0.avbqw.mongodb.net/?retryWrites=true&w=majority"
 );
 
 //Insert data
 const blogCreate = async () => {
+  const user = await User.create({
+    name: "azar",
+    email: "azar@azar.com",
+  });
 
-    const user = await User.create({
-        name: "hoge",
-        email: "hoge@hoge.com"
-    })
+  const comment = await Comment.create({
+    user: user._id,
+    content: "my comment",
+  });
 
   //method 1
   // const article = new Blog({
@@ -30,7 +36,8 @@ const blogCreate = async () => {
     published: true,
     content: "This is a new post",
     tags: ["new", "featured"],
-    author: user._id
+    author: user._id,
+    comments: [comment],
   });
 
   await article.save();
@@ -47,9 +54,11 @@ const blogFindOne = async () => {
 };
 
 const blogFindOnewithUser = async () => {
-    const firstArticle = await Blog.findOne({ slug: "new-post"}).populate("author");
-    console.log(firstArticle);
-  };
+  const firstArticle = await Blog.findOne({ slug: "new-post" }).populate(
+    "author"
+  );
+  console.log(firstArticle);
+};
 
 const blogUpdate = async () => {
   const articleToUpdate = await Blog.findOne({});
@@ -67,36 +76,49 @@ const blogFindById = async () => {
 };
 
 const blogDelete = async () => {
-    const blog = await Blog.deleteOne({ slug: "new-post"})
-    console.log(blog);
+  const blog = await Blog.deleteOne({ slug: "new-post" });
+  console.log(blog);
 };
 
 const blogDeleteMany = async () => {
-    const blog = await Blog.deleteMany({ slug: "new-post" })
-    console.log(blog);
+  const blog = await Blog.deleteMany({ slug: "new-post" });
+  console.log(blog);
 };
 
 const blogUsefulMethods = async () => {
-    const blogExists = await Blog.exists({ slug: "new-post" })
-    console.log(blogExists);
+  const blogExists = await Blog.exists({ slug: "new-post" });
+  console.log(blogExists);
 
-    const blogFind = await Blog.findOne({ slug: "new-post"})
-    console.log(blogFind)
+  const blogFind = await Blog.findOne({ slug: "new-post" });
+  console.log(blogFind);
 
-    const blogWhere = await Blog.where("slug").equals("new-post")
-    console.log(blogWhere)
+  const blogWhere = await Blog.where("slug").equals("new-post");
+  console.log(blogWhere);
 
-    const blogWhere2 = await Blog.where("slug").equals("new-post").select("title content")
-    console.log(blogWhere2)
+  const blogWhere2 = await Blog.where("slug")
+    .equals("new-post")
+    .select("title content");
+  console.log(blogWhere2);
 };
 
-
-
-// blogCreate();
-// blogFind();
+// creat comments
+const commentCreate = async () => {
+  const comment = await Comment.create({
+    content: "this is my first comment",
+  });
+};
+// find comment
+const commentFind = async () => {
+  const com = await Comment.findOne({});
+  console.log(com);
+};
+blogCreate();
+blogFind();
+// commentCreate();
+// commentFind();
 // blogFindOne();
 // blogFindOnewithUser();
-blogUpdate();
+// blogUpdate();
 // blogFindById();
 // blogDelete();
 // blogDeleteMany();
